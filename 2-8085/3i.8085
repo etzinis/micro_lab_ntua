@@ -1,0 +1,59 @@
+START: 
+	LDA 2000H		;диабасе тгм еисодо
+	MOV H,A 		;апохгйеусе тгм сто йатавыягтг г
+
+AND1:  ANI 03H		;йяата ломо та 2 LSB
+	CPI 03H		;суцйяиме ле то 0000 0011
+	JNZ ZERO_AND1		;ам дем еимаи йаи та 2 BITS=1 TOTE 0
+	MVI B,01H		;аккиыс 1
+	JMP AND2
+
+ZERO_AND1: 
+	MVI B,00H
+
+AND2:  MOV A,H
+	ANI 0CH		;йаята 3О йаи 4О LSB
+	CPI 0CH		;суцйяиме ле то 0000 1100
+	JNZ ZERO_AND2		;ам дем еимаи йаи та 2 BITS=1 тоте 0 
+	MVI C,02H		;аккиыс 2
+	JMP OR1		
+
+ZERO_AND2:
+	MVI C,00H
+
+OR1:	MOV A,H
+	ANI 30H
+	CPI 00H		;суцйяиме ле то 00г
+	JZ ZERO_OR1		;ам йаи та 2 BITS = 0 TOTE 0
+	MVI D,04H		;аккиыс 4
+	JMP OR2
+
+ZERO_OR1:
+	MVI D,00H
+
+OR2:	MOV A,H
+	ANI C0H
+	CPI 00H		;суцйяиме ле то 00г
+	JZ ZERO_OR2		;BITS = 0
+	MVI E,08H		;аккиыс 8
+	JMP L1
+
+ZERO_OR2:
+	MVI E,00H 
+
+L1:	MOV L,C		;апохгйеусе том C стом L
+	MOV A,C		
+	RRC			;RRC циа ма суцйяимы ле том б
+	MOV C,A
+	MOV A,B		
+	XRA C			
+	ADD L			
+	ADD D			
+	ADD E			
+	ANI 0FH		;йяатаы та 4 LSB
+	CMA 			;сулпкгяысе - амтистяожг коцийг тым LEDs
+	STA 3000H		
+	JMP START
+
+END
+	
